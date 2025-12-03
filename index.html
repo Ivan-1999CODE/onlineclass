@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>每週單字特訓班</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Poppins', 'Noto Sans TC', sans-serif;
+            background-color: #F3F4F6;
+            background-image: radial-gradient(#E5E7EB 1px, transparent 1px);
+            background-size: 20px 20px;
+            /* Prevent pull-to-refresh on mobile */
+            overscroll-behavior: none;
+        }
+        
+        /* Card Flip Animation */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Custom Scrollbar - Minimalist */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Hide Scrollbar but allow scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Sidebar Transition */
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
+
+        /* Sentence Builder Styles */
+        .word-chip {
+            transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .word-chip:active { transform: scale(0.95); }
+        
+        /* General Touch Optimization */
+        button { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="min-h-[100dvh] flex items-center justify-center p-2 md:p-6 overflow-hidden">
+
+    <!-- Main App Container -->
+    <div class="w-full max-w-md md:max-w-lg lg:max-w-xl bg-white rounded-[2rem] shadow-2xl overflow-hidden border-4 border-white ring-1 ring-gray-100 flex flex-col h-[92dvh] md:h-[85vh] relative transform transition-all duration-300">
+        
+        <!-- Sidebar Overlay -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-40 hidden opacity-0 touch-none"></div>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="absolute top-0 left-0 w-72 h-full bg-white z-50 transform -translate-x-full shadow-2xl flex flex-col">
+            <div class="p-6 bg-gradient-to-br from-violet-600 to-indigo-600 text-white shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i data-lucide="library" class="w-6 h-6"></i> 課程選單
+                    </h2>
+                    <button onclick="toggleSidebar()" class="p-1 hover:bg-white/20 rounded-full transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <p class="text-violet-100 text-sm">選擇您的學習進度</p>
+            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-2">
+                <button onclick="loadWeek(1)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-1">
+                    <span class="flex items-center gap-3"><span class="text-2xl">📅</span> 第一週：基礎篇</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
+                </button>
+                <button onclick="loadWeek(2)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-2">
+                    <span class="flex items-center gap-3"><span class="text-2xl">❄️</span> 第二週：冬日與歷史</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
+                </button>
+                <button onclick="loadWeek(3)" class="w-full text-left p-4 rounded-xl hover:bg-gray-50 text-gray-400 font-medium transition-all flex justify-between items-center group cursor-not-allowed opacity-70" id="week-btn-3">
+                    <span class="flex items-center gap-3"><span class="text-2xl">🔒</span> 第三週：進階預習</span>
+                    <i data-lucide="lock" class="w-4 h-4 text-gray-300"></i>
+                </button>
+            </div>
+            <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-gray-50">
+                Vocabulary App v3.5 (More Quizzes)
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-violet-500 to-fuchsia-500 pt-safe-top p-4 md:p-6 text-white text-center relative overflow-hidden shrink-0 z-10 shadow-md">
+            <!-- Decorative Pattern -->
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
+            
+            <div class="flex items-center justify-between relative z-10 mb-3">
+                <button onclick="toggleSidebar()" class="p-2 -ml-2 rounded-xl hover:bg-white/20 active:bg-white/30 transition-colors">
+                    <i data-lucide="menu" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+                </button>
+                <h1 id="header-title" class="text-lg md:text-xl font-bold tracking-wide truncate px-2">Week 1</h1>
+                <div class="w-10"></div> <!-- Spacer -->
+            </div>
+            
+            <!-- Mode Switcher -->
+            <div class="flex bg-black/10 p-1 rounded-2xl relative z-10 backdrop-blur-md gap-1 overflow-x-auto no-scrollbar snap-x">
+                <button onclick="switchMode('study')" id="btn-study" class="snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all bg-white text-violet-600 shadow-sm whitespace-nowrap active:scale-95">
+                    📖 複習
+                </button>
+                <button onclick="switchMode('sentence')" id="btn-sentence" class="snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all text-white hover:bg-white/10 whitespace-nowrap active:scale-95">
+                    🧩 句型
+                </button>
+                <button onclick="switchMode('quiz')" id="btn-quiz" class="snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all text-white hover:bg-white/10 whitespace-nowrap active:scale-95">
+                    🎯 單字測驗
+                </button>
+                <button onclick="switchMode('grammar')" id="btn-grammar" class="snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all text-white hover:bg-white/10 whitespace-nowrap active:scale-95">
+                    📚 文法
+                </button>
+                <button onclick="switchMode('grammar-quiz')" id="btn-grammar-quiz" class="snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all text-white hover:bg-white/10 whitespace-nowrap active:scale-95">
+                    📝 文法測驗
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-4 md:p-8 flex-1 overflow-y-auto overflow-x-hidden relative bg-white scroll-smooth" id="content-area">
+            
+            <!-- VIEW: FLASHCARDS (STUDY) -->
+            <div id="view-study" class="h-full flex flex-col relative max-w-md mx-auto w-full">
+                
+                <!-- View Toggle Switch -->
+                <div class="flex justify-center mb-4 shrink-0">
+                    <div class="bg-gray-100 p-1 rounded-xl flex shadow-inner">
+                        <button onclick="setStudyView('card')" id="view-toggle-card" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-gray-800 shadow-sm flex items-center gap-1">
+                            <i data-lucide="layers" class="w-3 h-3"></i> 卡片
+                        </button>
+                        <button onclick="setStudyView('list')" id="view-toggle-list" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-gray-600 flex items-center gap-1">
+                            <i data-lucide="list" class="w-3 h-3"></i> 列表
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODE A: CARD VIEW -->
+                <div id="study-mode-card" class="flex-1 flex flex-col justify-between h-full overflow-hidden transition-opacity duration-300">
+                    <div class="text-center mb-2 text-gray-400 text-xs font-bold tracking-widest uppercase">
+                        Card <span id="fc-counter" class="text-violet-600">1</span> of <span id="fc-total">30</span>
+                    </div>
+
+                    <!-- Flashcard -->
+                    <div class="perspective-1000 w-full flex-1 min-h-[250px] md:min-h-[350px] cursor-pointer group mb-6 select-none tap-highlight-transparent" onclick="flipCard()">
+                        <div id="flashcard-inner" class="card-inner relative w-full h-full transform-style-3d shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-3xl">
+                            
+                            <!-- Front (English) -->
+                            <div class="absolute w-full h-full backface-hidden bg-white border border-gray-100 rounded-3xl flex flex-col items-center justify-center p-8 bg-gradient-to-br from-white via-white to-violet-50/50">
+                                <span id="fc-part" class="absolute top-6 right-6 bg-violet-100 text-violet-700 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">N.</span>
+                                <h2 id="fc-en" class="text-4xl md:text-5xl font-bold text-gray-800 text-center mb-2 break-words leading-tight">Musician</h2>
+                                <div class="mt-8 flex items-center gap-2 text-violet-400 text-sm animate-bounce">
+                                    <i data-lucide="touchpad" class="w-4 h-4"></i>
+                                    <span>點擊翻面</span>
+                                </div>
+                            </div>
+
+                            <!-- Back (Chinese) -->
+                            <div class="absolute w-full h-full backface-hidden rotate-y-180 bg-violet-600 text-white rounded-3xl flex flex-col items-center justify-center p-8 shadow-inner bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
+                                <h2 id="fc-zh" class="text-4xl md:text-5xl font-bold text-center break-words leading-tight">音樂家</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-between items-center gap-4 shrink-0 pb-2">
+                        <button onclick="prevCard()" class="p-4 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors shadow-sm active:scale-90 border border-gray-100">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        
+                        <button onclick="speakWord()" class="flex-1 py-4 bg-violet-50 text-violet-600 rounded-2xl font-bold hover:bg-violet-100 transition-colors flex items-center justify-center gap-2 active:scale-[0.98]">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                            <span>發音</span>
+                        </button>
+
+                        <button onclick="nextCard()" class="p-4 rounded-full bg-violet-600 hover:bg-violet-700 text-white transition-colors shadow-lg shadow-violet-200 active:scale-90 ring-4 ring-violet-50">
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODE B: LIST VIEW -->
+                <div id="study-mode-list" class="hidden flex-1 overflow-y-auto px-1 pb-4 transition-opacity duration-300">
+                    <!-- List items will be injected here -->
+                    <div id="vocab-list-container" class="space-y-3"></div>
+                </div>
+
+            </div>
+
+            <!-- VIEW: SENTENCE BUILDER -->
+            <div id="view-sentence" class="hidden h-full flex flex-col max-w-lg mx-auto w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm font-bold text-gray-500 flex items-center gap-2">
+                        <i data-lucide="puzzle" class="w-4 h-4"></i> 重組句子
+                    </span>
+                    <span class="text-xs bg-violet-100 text-violet-700 px-3 py-1 rounded-full font-bold" id="sent-progress">1 / 5</span>
+                </div>
+
+                <!-- Chinese Hint -->
+                <div class="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-200 mb-6 text-center shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-violet-400"></div>
+                    <p id="sent-zh" class="text-gray-800 font-bold text-xl md:text-2xl leading-relaxed">這位音樂家正在演奏。</p>
+                </div>
+
+                <!-- Answer Area (Slots) -->
+                <div id="sent-slots" class="flex flex-wrap gap-3 min-h-[100px] p-4 rounded-2xl bg-violet-50/30 border-2 border-dashed border-violet-200 items-start content-start mb-8 transition-colors duration-300">
+                    <!-- Words move here -->
+                </div>
+
+                <!-- Word Bank -->
+                <div class="flex-1">
+                    <p class="text-xs text-gray-400 mb-3 text-center uppercase tracking-widest font-bold">Word Bank</p>
+                    <div id="sent-bank" class="flex flex-wrap gap-3 justify-center content-start pb-4">
+                        <!-- Words start here -->
+                    </div>
+                </div>
+
+                <!-- Result/Next Button -->
+                <div class="mt-auto pt-4 flex items-center justify-center h-20 shrink-0">
+                    <div id="sent-feedback" class="hidden w-full">
+                        <button onclick="nextSentence()" class="w-full py-4 bg-green-500 text-white rounded-2xl font-bold shadow-lg shadow-green-200 hover:bg-green-600 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-lg animate-pulse">
+                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                            <span>正確！下一題</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: QUIZ -->
+            <div id="view-quiz" class="hidden h-full flex flex-col max-w-2xl mx-auto w-full">
+                <div class="flex justify-between items-end mb-6 px-2">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Score</span>
+                        <span id="score-display" class="text-3xl font-black text-violet-600 leading-none">0</span>
+                    </div>
+                    <div class="bg-orange-50 px-3 py-1 rounded-lg border border-orange-100">
+                        <span class="text-sm text-orange-600 font-bold">Streak: <span id="streak-display">🔥 0</span></span>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-100 rounded-3xl p-8 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] mb-8 relative overflow-hidden shrink-0">
+                    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400"></div>
+                    <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">What is the meaning of?</span>
+                    <h2 id="q-word" class="text-3xl md:text-4xl font-black text-gray-800 mt-3 mb-1">Word</h2>
+                </div>
+
+                <!-- Grid Layout: 1 col on mobile, 2 cols on tablet/desktop -->
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 overflow-y-auto pb-6 px-1">
+                    <!-- Options injected here -->
+                </div>
+
+                <!-- Quiz Feedback Overlay -->
+                <div id="feedback-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-md z-20 hidden opacity-0 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
+                    <div id="feedback-icon" class="text-7xl mb-6 transform scale-0 transition-transform duration-300 drop-shadow-md">🎉</div>
+                    <h3 id="feedback-text" class="text-3xl font-black text-gray-800 mb-6">Correct!</h3>
+                    <button onclick="nextQuestion()" class="px-10 py-4 bg-violet-600 text-white rounded-full font-bold shadow-xl shadow-violet-200 hover:bg-violet-700 active:scale-95 transition-all text-lg flex items-center gap-2">
+                        <span>下一題</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: GRAMMAR -->
+            <div id="view-grammar" class="hidden h-full flex flex-col overflow-y-auto pb-4 max-w-2xl mx-auto w-full">
+                <!-- Content injected via JS -->
+            </div>
+
+             <!-- VIEW: GRAMMAR QUIZ (NEW) -->
+             <div id="view-grammar-quiz" class="hidden h-full flex flex-col max-w-2xl mx-auto w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm font-bold text-gray-500 flex items-center gap-2">
+                        <i data-lucide="pencil" class="w-4 h-4"></i> 文法測驗
+                    </span>
+                    <span class="text-xs bg-violet-100 text-violet-700 px-3 py-1 rounded-full font-bold" id="g-quiz-progress">1 / 8</span>
+                </div>
+
+                <!-- Question Card -->
+                <div class="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-[0_4px_20px_rgb(0,0,0,0.05)] mb-6 flex-1 flex flex-col justify-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-violet-400"></div>
+                    <h2 id="g-quiz-q" class="text-2xl md:text-3xl font-bold text-gray-800 leading-relaxed mb-8">
+                        I ___ a musician.
+                    </h2>
+                    
+                    <!-- Options -->
+                    <div id="g-quiz-options" class="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+                        <!-- Options injected via JS -->
+                    </div>
+                </div>
+
+                <div id="g-quiz-feedback" class="h-16 flex items-center justify-center text-center">
+                    <!-- Feedback msg -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // --- Data Repository ---
+    // Updated: Removed "to " from verbs
+    const courseData = {
+        1: {
+            title: "English Vocab: Week 1",
+            vocab: [
+                { en: "music", zh: "音樂", part: "n." },
+                { en: "lute", zh: "魯特琴", part: "n." },
+                { en: "musician", zh: "音樂家", part: "n." },
+                { en: "country", zh: "國家; 地區", part: "n." },
+                { en: "important", zh: "重要的", part: "adj." },
+                { en: "cool", zh: "涼爽的", part: "adj.", variants: "cooler, coolest" },
+                { en: "holiday", zh: "假期", part: "n." },
+                { en: "flight", zh: "航班; 飛行", part: "n." },
+                { en: "type", zh: "類型", part: "n." },
+                { en: "prize", zh: "獎項; 獎賞", part: "n." },
+                { en: "decide", zh: "決定", part: "v." },
+                { en: "win", zh: "贏; 獲勝", part: "v." },
+                { en: "culture", zh: "文化", part: "n." },
+                { en: "hot", zh: "熱的", part: "adj.", variants: "hotter, hottest" },
+                { en: "planet", zh: "行星; 地球", part: "n." },
+                { en: "change", zh: "改變; 更換", part: "v." },
+                { en: "world", zh: "世界", part: "n." },
+                { en: "heat", zh: "熱度; 高溫", part: "n." },
+                { en: "prefer", zh: "更喜歡; 偏好", part: "v." },
+                { en: "love song", zh: "情歌", part: "n." },
+                { en: "old", zh: "老的", part: "adj.", variants: "older, oldest" },
+                { en: "sad", zh: "傷心的", part: "adj.", variants: "sadder, saddest" },
+                { en: "perform", zh: "表演", part: "v." },
+                { en: "barber", zh: "理髮師", part: "n." },
+                { en: "competition", zh: "比賽", part: "n." },
+                { en: "design", zh: "設計; 圖案", part: "n." },
+                { en: "hair", zh: "頭髮; 髮型", part: "n." },
+                { en: "realize", zh: "意識到", part: "v." },
+                { en: "animal", zh: "動物", part: "n." },
+                { en: "help", zh: "幫助", part: "v." },
+                { en: "adopt", zh: "收養; 領養", part: "v." },
+                { en: "problem", zh: "問題", part: "n." },
+                { en: "dog", zh: "狗", part: "n." }
+            ],
+            sentences: [
+                { en: "The musician plays the lute", zh: "這位音樂家演奏魯特琴" },
+                { en: "This is an important decision", zh: "這是一個重要的決定" },
+                { en: "He wants to win the prize", zh: "他想要贏得這個獎項" },
+                { en: "The barber cuts hair", zh: "理髮師剪頭髮" },
+                { en: "I prefer pop music", zh: "我比較喜歡流行音樂" },
+                { en: "It is the hottest day", zh: "這是最熱的一天" },
+                { en: "We live on a beautiful planet", zh: "我們住在一個美麗的行星上" },
+                { en: "She won the competition", zh: "她贏得了比賽" },
+                { en: "Do not be sad", zh: "不要難過" },
+                { en: "Culture is very important", zh: "文化非常重要" },
+                { en: "They want to adopt a dog", zh: "他們想要領養一隻狗" }
+            ],
+            grammar: {
+                title: "基礎句型複習",
+                content: [
+                    {
+                        type: "rule",
+                        title: "Be 動詞 (am, is, are)",
+                        desc: "用於描述狀態或身份。",
+                        examples: [
+                            { en: "I am a musician.", zh: "我是一位音樂家。" },
+                            { en: "They are happy.", zh: "他們很開心。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "help 的用法",
+                        desc: "1. help + (to) V (幫助做某事)<br>2. help + with + N (在某方面幫忙)",
+                        examples: [
+                            { en: "She helps clean the house.", zh: "她幫忙打掃房子。" },
+                            { en: "He helps with the homework.", zh: "他幫忙做功課。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "A be made of B",
+                        desc: "表示「由...製成」(物理變化，仍可看出原材料)。",
+                        examples: [
+                            { en: "The table is made of wood.", zh: "這張桌子是木頭做的。" },
+                            { en: "The bottle is made of plastic.", zh: "這個瓶子是塑膠做的。" }
+                        ]
+                    }
+                ]
+            },
+            grammarQuiz: [
+                {
+                    q: "I ___ a musician.",
+                    options: ["am", "is", "are", "be"],
+                    answer: "am",
+                    hint: "第一人稱 I 搭配 am。"
+                },
+                {
+                    q: "The table is made ___ wood.",
+                    options: ["from", "of", "by", "in"],
+                    answer: "of",
+                    hint: "be made of 表示物理變化（看得出原料）。"
+                },
+                {
+                    q: "She helps ___ the homework.",
+                    options: ["at", "on", "with", "to"],
+                    answer: "with",
+                    hint: "help with + 名詞 (help with the homework)。"
+                },
+                {
+                    q: "He helps ___ the house.",
+                    options: ["clean", "cleaning", "cleaned", "cleans"],
+                    answer: "clean",
+                    hint: "help + (to) 原形動詞。"
+                },
+                {
+                    q: "The boys ___ playing basketball.",
+                    options: ["am", "is", "are", "be"],
+                    answer: "are",
+                    hint: "複數主詞 (The boys) 搭配 are。"
+                },
+                {
+                    q: "This chair is made ___ plastic.",
+                    options: ["by", "of", "from", "in"],
+                    answer: "of",
+                    hint: "be made of 表示物理變化。"
+                },
+                {
+                    q: "Can you help me ___ the door?",
+                    options: ["open", "opening", "opened", "opens"],
+                    answer: "open",
+                    hint: "help + 原形動詞。"
+                },
+                {
+                    q: "She ___ my sister.",
+                    options: ["are", "am", "is", "be"],
+                    answer: "is",
+                    hint: "第三人稱單數 She 搭配 is。"
+                }
+            ]
+        },
+        2: {
+            title: "Week 2: Winter & History",
+            vocab: [
+                { en: "player", zh: "玩家; 選手", part: "n." },
+                { en: "hit", zh: "打; 撞", part: "v." },
+                { en: "point", zh: "點; 分", part: "n." },
+                { en: "win", zh: "贏; 獲勝", part: "v." },
+                { en: "annoying", zh: "惱人的", part: "adj.", variants: "more annoying, most annoying" },
+                { en: "fun", zh: "有趣的", part: "adj.", variants: "funner, funnest" },
+                { en: "there was", zh: "有 (過去式)", part: "phr." },
+                { en: "a lot", zh: "很多", part: "phr." },
+                { en: "snow", zh: "雪", part: "n." },
+                { en: "team", zh: "團隊", part: "n." },
+                { en: "snowball fight", zh: "打雪仗", part: "n." },
+                { en: "jar", zh: "罐子", part: "n." },
+                { en: "King", zh: "國王", part: "Proper n." },
+                { en: "wife", zh: "妻子", part: "n." },
+                { en: "Queen", zh: "皇后", part: "Proper n." },
+                { en: "too much", zh: "太多", part: "phr." },
+                { en: "there is", zh: "有", part: "phr." },
+                { en: "work", zh: "工作; 運轉", part: "v." },
+                { en: "find", zh: "發現; 找到", part: "v." },
+                { en: "tomb", zh: "墓", part: "n." },
+                { en: "water", zh: "水", part: "n." },
+                { en: "into", zh: "進入", part: "prep." }
+            ],
+            sentences: [
+                { en: "It was a fun snowball fight", zh: "那是一場有趣的打雪仗" },
+                { en: "The player wants to win", zh: "那位選手想要贏" },
+                { en: "There was a lot of snow", zh: "那裡有很多雪" },
+                { en: "Our team got a point", zh: "我們的團隊得了一分" },
+                { en: "The sound is very annoying", zh: "那個聲音很惱人" },
+                { en: "He hit the ball", zh: "他擊中了球" },
+                { en: "Playing in the snow is fun", zh: "在雪中玩耍很有趣" },
+                { en: "The King and Queen are here", zh: "國王和皇后在這裡" },
+                { en: "They found a jar in the tomb", zh: "他們在墓裡發現了一個罐子" },
+                { en: "He goes to work every day", zh: "他每天去工作" },
+                { en: "There is too much water", zh: "有太多的水" },
+                { en: "She went into the room", zh: "她走進了房間" }
+            ],
+            grammar: {
+                title: "現在簡單式：否定形式",
+                subtitle: "Present Simple Negative",
+                content: [
+                    {
+                        type: "rule",
+                        title: "基本句式",
+                        desc: "Subject + don't / doesn't + Verb (Base Form)",
+                        highlight: true,
+                        examples: [
+                            { en: "Things in the tomb don't look very good.", zh: "墓裡的東西看起來不太好。" },
+                            { en: "She doesn't like carrots.", zh: "她不喜歡胡蘿蔔。" },
+                            { en: "We don't want your help.", zh: "我們不想要你的幫助。" }
+                        ]
+                    },
+                    {
+                        type: "table",
+                        title: "助動詞規則",
+                        data: [
+                            { sub: "I / You / We / They", aux: "don't (do not)" },
+                            { sub: "He / She / It", aux: "doesn't (does not)" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "能 / 不能 (Can / Can't)",
+                        desc: "情態助動詞，表示能力或許可，後面接原形動詞。",
+                        examples: [
+                            { en: "I can swim.", zh: "我會游泳。" },
+                            { en: "He can't drive.", zh: "他不會開車。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "instead of (代替 / 而不是)",
+                        desc: "後面接名詞 (N.) 或動名詞 (V-ing)。",
+                        examples: [
+                            { en: "I want tea instead of coffee.", zh: "我想要茶而不是咖啡。" },
+                            { en: "He walked instead of driving.", zh: "他走路而不是開車。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "be careful with (小心...)",
+                        desc: "提醒某人小心處理某物或某情況。",
+                        examples: [
+                            { en: "Be careful with that knife.", zh: "小心那把刀。" },
+                            { en: "Please be careful with my glasses.", zh: "請小心我的眼鏡。" }
+                        ]
+                    }
+                ]
+            },
+            grammarQuiz: [
+                {
+                    q: "She ___ like carrots.",
+                    options: ["don't", "doesn't", "isn't", "aren't"],
+                    answer: "doesn't",
+                    hint: "第三人稱單數 (She) 使用 doesn't。"
+                },
+                {
+                    q: "I ___ swim very fast.",
+                    options: ["cans", "can", "to can", "canning"],
+                    answer: "can",
+                    hint: "情態助動詞 can 後面接原形動詞，且不隨人稱變化。"
+                },
+                {
+                    q: "I want tea instead ___ coffee.",
+                    options: ["of", "for", "with", "to"],
+                    answer: "of",
+                    hint: "片語 instead of (代替)。"
+                },
+                {
+                    q: "Please be careful ___ that knife.",
+                    options: ["about", "of", "with", "at"],
+                    answer: "with",
+                    hint: "be careful with + 物品。"
+                },
+                {
+                    q: "They ___ want to go.",
+                    options: ["doesn't", "don't", "isn't", "aren't"],
+                    answer: "don't",
+                    hint: "複數主詞 (They) 的否定助動詞用 don't。"
+                },
+                {
+                    q: "___ you help me?",
+                    options: ["Can", "Are", "Do", "Is"],
+                    answer: "Can",
+                    hint: "表示請求能力，用 Can 開頭。"
+                },
+                {
+                    q: "He went to the park instead of ___ at home.",
+                    options: ["stay", "staying", "stayed", "to stay"],
+                    answer: "staying",
+                    hint: "instead of 後面接動名詞 (V-ing)。"
+                },
+                {
+                    q: "Be careful ___ the hot water.",
+                    options: ["at", "on", "with", "to"],
+                    answer: "with",
+                    hint: "be careful with + 物品。"
+                }
+            ]
+        },
+        3: {
+            title: "English Vocab: Week 3",
+            vocab: [{ en: "coming soon", zh: "即將推出", part: "..." }],
+            sentences: [{ en: "Coming soon", zh: "內容即將推出" }],
+            grammar: { title: "Coming Soon", content: [] },
+            grammarQuiz: []
+        }
+    };
+
+    // --- State Management ---
+    let currentWeek = 1;
+    let vocabList = [];
+    let sentenceList = [];
+    let currentGrammar = null;
+    let currentGrammarQuiz = [];
+    
+    let currentMode = 'study';
+    let currentStudyView = 'card'; // 'card' or 'list'
+    let currentIndex = 0;
+    
+    // Quiz State
+    let score = 0;
+    let streak = 0;
+    let currentQuizItem = null;
+
+    // Sentence State
+    let currentSentIndex = 0;
+    let currentSentWords = [];
+    let placedWords = [];
+    let availableBankWords = [];
+
+    // Grammar Quiz State
+    let currentGQuizIndex = 0;
+
+    // --- Initialization ---
+    function init() {
+        loadWeek(1);
+        // Fix for mobile height issues on initialization
+        window.addEventListener('resize', () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
+    }
+
+    // --- Sidebar Logic ---
+    window.toggleSidebar = function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const isClosed = sidebar.classList.contains('-translate-x-full');
+
+        if (isClosed) {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden', 'opacity-0');
+            document.body.style.overflow = 'hidden'; // Lock body scroll
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+            document.body.style.overflow = ''; // Unlock body scroll
+        }
+    }
+
+    window.loadWeek = function(weekId) {
+        currentWeek = weekId;
+        const data = courseData[weekId];
+        
+        vocabList = JSON.parse(JSON.stringify(data.vocab));
+        sentenceList = JSON.parse(JSON.stringify(data.sentences));
+        currentGrammar = data.grammar;
+        currentGrammarQuiz = data.grammarQuiz || [];
+        
+        document.getElementById('header-title').innerText = data.title;
+        
+        [1, 2, 3].forEach(id => {
+            const btn = document.getElementById(`week-btn-${id}`);
+            if(id === weekId) {
+                btn.classList.add('bg-violet-50', 'text-violet-700');
+            } else {
+                btn.classList.remove('bg-violet-50', 'text-violet-700');
+            }
+        });
+
+        // Reset State
+        currentIndex = 0;
+        currentSentIndex = 0;
+        currentGQuizIndex = 0;
+        score = 0;
+        streak = 0;
+        updateStats();
+
+        // Separate shuffle for Flashcards and Quiz to keep list view somewhat consistent (optional, but shuffling list view is better for learning)
+        shuffle(vocabList);
+        shuffle(sentenceList);
+
+        // Update Views
+        updateFlashcard();
+        renderStudyList(); 
+        if (currentMode === 'sentence') initSentenceLevel();
+        if (currentMode === 'quiz') nextQuestion();
+        if (currentMode === 'grammar') renderGrammar();
+        if (currentMode === 'grammar-quiz') initGrammarQuiz();
+
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar.classList.contains('-translate-x-full')) {
+            toggleSidebar();
+        }
+    }
+
+    // --- Mode Switching ---
+    window.switchMode = function(mode) {
+        currentMode = mode;
+        const btns = ['btn-study', 'btn-sentence', 'btn-quiz', 'btn-grammar', 'btn-grammar-quiz'];
+        const views = ['view-study', 'view-sentence', 'view-quiz', 'view-grammar', 'view-grammar-quiz'];
+
+        btns.forEach(b => {
+            const btn = document.getElementById(b);
+            if (b === `btn-${mode}`) {
+                btn.className = "snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all bg-white text-violet-600 shadow-sm whitespace-nowrap active:scale-95";
+            } else {
+                btn.className = "snap-center flex-1 min-w-[70px] py-2.5 rounded-xl text-sm font-bold transition-all text-white hover:bg-white/10 whitespace-nowrap active:scale-95";
+            }
+        });
+
+        views.forEach(v => {
+            document.getElementById(v).classList.add('hidden');
+        });
+        document.getElementById(`view-${mode}`).classList.remove('hidden');
+
+        // Scroll content area to top
+        document.getElementById('content-area').scrollTop = 0;
+
+        if (mode === 'quiz') nextQuestion();
+        if (mode === 'sentence') initSentenceLevel();
+        if (mode === 'grammar') renderGrammar();
+        if (mode === 'grammar-quiz') initGrammarQuiz();
+    }
+
+    // ==========================================
+    // 📖 STUDY MODE: Card vs List
+    // ==========================================
+    
+    window.setStudyView = function(viewMode) {
+        currentStudyView = viewMode;
+        const cardView = document.getElementById('study-mode-card');
+        const listView = document.getElementById('study-mode-list');
+        const btnCard = document.getElementById('view-toggle-card');
+        const btnList = document.getElementById('view-toggle-list');
+
+        if (viewMode === 'card') {
+            cardView.classList.remove('hidden');
+            listView.classList.add('hidden');
+            
+            btnCard.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-gray-800 shadow-sm flex items-center gap-1";
+            btnList.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-gray-600 flex items-center gap-1";
+        } else {
+            cardView.classList.add('hidden');
+            listView.classList.remove('hidden');
+            
+            btnCard.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-gray-600 flex items-center gap-1";
+            btnList.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-gray-800 shadow-sm flex items-center gap-1";
+            
+            renderStudyList();
+        }
+    }
+
+    function renderStudyList() {
+        const container = document.getElementById('vocab-list-container');
+        container.innerHTML = '';
+
+        if(vocabList.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-400 py-10">No vocabulary loaded.</p>';
+            return;
+        }
+
+        vocabList.forEach(item => {
+            const el = document.createElement('div');
+            el.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all";
+            el.onclick = () => speakText(item.en);
+            
+            let variantsHtml = '';
+            if (item.variants) {
+                variantsHtml = `<span class="text-xs text-gray-400 ml-2 font-normal">(${item.variants})</span>`;
+            }
+
+            el.innerHTML = `
+                <div class="flex-1">
+                    <div class="flex items-baseline gap-2 mb-1">
+                        <h3 class="text-lg font-bold text-gray-800">${item.en}</h3>
+                        <span class="text-xs font-bold text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded">${item.part}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm">${item.zh} ${variantsHtml}</p>
+                </div>
+                <button class="p-2 rounded-full text-violet-300 group-hover:bg-violet-50 group-hover:text-violet-600 transition-colors">
+                    <i data-lucide="volume-2" class="w-5 h-5"></i>
+                </button>
+            `;
+            container.appendChild(el);
+        });
+        
+        lucide.createIcons();
+    }
+
+
+    // ==========================================
+    // 📚 GRAMMAR RENDERER
+    // ==========================================
+    function renderGrammar() {
+        const container = document.getElementById('view-grammar');
+        if(!currentGrammar) {
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">本週尚無文法內容</div>`;
+            return;
+        }
+
+        let html = `
+            <div class="mb-6 bg-violet-50 p-6 rounded-2xl border border-violet-100">
+                <h2 class="text-2xl font-bold text-violet-800">${currentGrammar.title}</h2>
+                ${currentGrammar.subtitle ? `<p class="text-violet-500 font-medium mt-1">${currentGrammar.subtitle}</p>` : ''}
+            </div>
+        `;
+
+        currentGrammar.content.forEach(section => {
+            if(section.type === 'rule') {
+                html += `
+                    <div class="mb-6 bg-white rounded-2xl border-l-4 border-violet-500 shadow-sm p-5 ring-1 ring-gray-100">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-4 h-4 text-violet-500"></i> ${section.title}
+                        </h3>
+                        ${section.desc ? `<p class="text-gray-600 mb-4 leading-relaxed ${section.highlight ? 'bg-amber-50 p-3 rounded-lg text-amber-800 font-mono text-sm border border-amber-100' : ''}">${section.desc}</p>` : ''}
+                        
+                        ${section.examples ? `
+                            <div class="space-y-3 mt-4">
+                                ${section.examples.map(ex => `
+                                    <div class="cursor-pointer group hover:bg-gray-50 p-3 rounded-xl transition-colors border border-transparent hover:border-gray-100" onclick="speakText('${ex.en.replace(/'/g, "\\'")}')">
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-1 p-2 bg-violet-100 rounded-full text-violet-600 shrink-0 group-hover:bg-violet-200 transition-colors">
+                                                <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-800 font-bold text-base md:text-lg group-hover:text-violet-700 transition-colors">${ex.en}</p>
+                                                <p class="text-gray-400 text-sm">${ex.zh}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (section.type === 'table') {
+                html += `
+                    <div class="mb-6 bg-white rounded-2xl shadow-sm overflow-hidden ring-1 ring-gray-100">
+                        <div class="bg-gray-50 px-5 py-3 border-b border-gray-100">
+                            <h3 class="font-bold text-gray-700 text-sm flex items-center gap-2">
+                                <i data-lucide="table" class="w-4 h-4"></i> ${section.title}
+                            </h3>
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            ${section.data.map(row => `
+                                <div class="flex p-4 text-base">
+                                    <div class="w-1/2 font-medium text-gray-800">${row.sub}</div>
+                                    <div class="w-1/2 text-violet-600 font-mono font-bold text-right">${row.aux}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        container.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    // ==========================================
+    // 📝 GRAMMAR QUIZ LOGIC
+    // ==========================================
+    function initGrammarQuiz() {
+        if (!currentGrammarQuiz || currentGrammarQuiz.length === 0) {
+            document.getElementById('view-grammar-quiz').innerHTML = 
+                '<div class="flex flex-col items-center justify-center h-full text-gray-400"><i data-lucide="alert-circle" class="w-12 h-12 mb-2"></i><p>本週尚無文法測驗</p></div>';
+            lucide.createIcons();
+            return;
+        }
+        currentGQuizIndex = 0;
+        renderGrammarQuiz();
+    }
+
+    function renderGrammarQuiz() {
+        const item = currentGrammarQuiz[currentGQuizIndex];
+        document.getElementById('g-quiz-progress').innerText = `${currentGQuizIndex + 1} / ${currentGrammarQuiz.length}`;
+        document.getElementById('g-quiz-q').innerText = item.q;
+        
+        // Reset Feedback
+        document.getElementById('g-quiz-feedback').innerHTML = '';
+        
+        const optionsDiv = document.getElementById('g-quiz-options');
+        optionsDiv.innerHTML = '';
+        
+        item.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-gray-700 font-bold hover:bg-violet-50 hover:border-violet-200 transition-all active:scale-[0.98]";
+            btn.innerText = opt;
+            btn.onclick = () => checkGrammarAnswer(opt, item, btn);
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function checkGrammarAnswer(selected, item, btn) {
+        const feedbackDiv = document.getElementById('g-quiz-feedback');
+        const optionsDiv = document.getElementById('g-quiz-options');
+        
+        // Disable all buttons
+        const allBtns = optionsDiv.querySelectorAll('button');
+        allBtns.forEach(b => b.disabled = true);
+
+        if (selected === item.answer) {
+            // Correct
+            btn.classList.remove('bg-gray-50', 'border-gray-100', 'text-gray-700');
+            btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+            feedbackDiv.innerHTML = `<span class="text-green-600 font-bold flex items-center gap-2"><i data-lucide="check" class="w-5 h-5"></i> 答對了！</span>`;
+            fireConfetti();
+            
+            setTimeout(() => {
+                if (currentGQuizIndex < currentGrammarQuiz.length - 1) {
+                    currentGQuizIndex++;
+                    renderGrammarQuiz();
+                } else {
+                    feedbackDiv.innerHTML = `<span class="text-violet-600 font-bold">🎉 測驗完成！太棒了！</span>`;
+                    // Reset or show completion screen
+                    setTimeout(() => {
+                        currentGQuizIndex = 0;
+                        renderGrammarQuiz();
+                    }, 3000);
+                }
+            }, 1500);
+
+        } else {
+            // Incorrect
+            btn.classList.remove('bg-gray-50', 'border-gray-100', 'text-gray-700');
+            btn.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+            
+            // Highlight correct answer
+            allBtns.forEach(b => {
+                if(b.innerText === item.answer) {
+                    b.classList.add('bg-green-50', 'border-green-300', 'text-green-700');
+                }
+            });
+
+            feedbackDiv.innerHTML = `
+                <div class="flex flex-col items-center">
+                    <span class="text-red-500 font-bold flex items-center gap-2 text-sm"><i data-lucide="x" class="w-4 h-4"></i> 再試一次</span>
+                    ${item.hint ? `<span class="text-xs text-gray-500 mt-1">${item.hint}</span>` : ''}
+                </div>
+            `;
+            
+            // Allow retry after delay or specific logic
+            // For now, auto advance after 2.5s to keep flow
+            setTimeout(() => {
+                 if (currentGQuizIndex < currentGrammarQuiz.length - 1) {
+                    currentGQuizIndex++;
+                    renderGrammarQuiz();
+                } else {
+                     feedbackDiv.innerHTML = `<span class="text-violet-600 font-bold">🎉 測驗完成！</span>`;
+                     setTimeout(() => {
+                        currentGQuizIndex = 0;
+                        renderGrammarQuiz();
+                    }, 3000);
+                }
+            }, 2500);
+        }
+        lucide.createIcons();
+    }
+
+
+    window.speakText = function(text) {
+        // Cancel existing speech to avoid overlap
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US'; 
+        speechSynthesis.speak(utterance);
+    }
+
+    // ==========================================
+    // 📖 FLASHCARD LOGIC
+    // ==========================================
+    function updateFlashcard() {
+        if(vocabList.length === 0) return;
+        const item = vocabList[currentIndex];
+        const cardInner = document.getElementById('flashcard-inner');
+        
+        // Reset flip immediately
+        cardInner.style.transform = 'rotateY(0deg)'; 
+
+        // Delay content update slightly for smooth transition feel if was flipped
+        setTimeout(() => {
+            let displayEn = item.en;
+            if(item.variants) displayEn += `<br><span class="text-lg font-normal text-gray-400 mt-2 block">${item.variants}</span>`;
+            
+            document.getElementById('fc-en').innerHTML = displayEn;
+            document.getElementById('fc-zh').innerText = item.zh;
+            document.getElementById('fc-part').innerText = item.part;
+            document.getElementById('fc-counter').innerText = currentIndex + 1;
+            document.getElementById('fc-total').innerText = vocabList.length;
+        }, 200);
+    }
+
+    window.flipCard = function() {
+        const cardInner = document.getElementById('flashcard-inner');
+        const isFlipped = cardInner.style.transform === 'rotateY(180deg)';
+        cardInner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
+    }
+
+    window.nextCard = function() {
+        currentIndex = (currentIndex + 1) % vocabList.length;
+        updateFlashcard();
+    }
+
+    window.prevCard = function() {
+        currentIndex = (currentIndex - 1 + vocabList.length) % vocabList.length;
+        updateFlashcard();
+    }
+
+    window.speakWord = function(e) {
+        // Prevent card flip if button clicked inside card area (though button is outside now)
+        if(e) e.stopPropagation(); 
+        
+        if(vocabList.length === 0) return;
+        const item = vocabList[currentIndex];
+        
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(item.en);
+        utterance.lang = 'en-US'; 
+        speechSynthesis.speak(utterance);
+    }
+
+    // ==========================================
+    // 🧩 SENTENCE BUILDER LOGIC
+    // ==========================================
+    function initSentenceLevel() {
+        if(sentenceList.length === 0) return;
+        currentSentIndex = 0;
+        loadSentence();
+    }
+
+    function loadSentence() {
+        const sentObj = sentenceList[currentSentIndex];
+        document.getElementById('sent-zh').innerText = sentObj.zh;
+        document.getElementById('sent-progress').innerText = `${currentSentIndex + 1} / ${sentenceList.length}`;
+        document.getElementById('sent-feedback').classList.add('hidden');
+
+        // Prepare words
+        const words = sentObj.en.replace(/[.,]/g,"").split(/\s+/);
+        currentSentWords = words; 
+        
+        availableBankWords = words.map((w, i) => ({ word: w, id: i }));
+        shuffle(availableBankWords);
+        placedWords = []; 
+
+        renderSent();
+    }
+
+    function renderSent() {
+        const slotsDiv = document.getElementById('sent-slots');
+        const bankDiv = document.getElementById('sent-bank');
+        slotsDiv.innerHTML = '';
+        bankDiv.innerHTML = '';
+
+        if (placedWords.length === 0) {
+            slotsDiv.innerHTML = `<span class="text-violet-300 text-sm w-full text-center py-4 select-none pointer-events-none font-medium italic">點擊下方單字依序排列...</span>`;
+        } else {
+            placedWords.forEach((obj, idx) => {
+                const chip = createChip(obj.word, 'bg-white text-violet-700 border-violet-200 hover:bg-red-50 hover:border-red-200 hover:text-red-500 shadow-sm', () => removeWord(idx));
+                slotsDiv.appendChild(chip);
+            });
+        }
+
+        availableBankWords.forEach((obj, idx) => {
+            const chip = createChip(obj.word, 'bg-white border-gray-200 text-gray-700 hover:border-violet-400 hover:text-violet-600 shadow-sm active:bg-violet-50', () => pickWord(idx));
+            bankDiv.appendChild(chip);
+        });
+
+        checkSentenceCompletion();
+    }
+
+    function createChip(text, classes, onClick) {
+        const btn = document.createElement('div');
+        btn.className = `word-chip px-4 py-2 md:px-5 md:py-3 rounded-xl font-bold border-2 text-lg md:text-xl ${classes}`;
+        btn.innerText = text;
+        btn.onclick = onClick;
+        return btn;
+    }
+
+    function pickWord(bankIdx) {
+        const item = availableBankWords.splice(bankIdx, 1)[0];
+        placedWords.push(item);
+        renderSent();
+    }
+
+    function removeWord(placedIdx) {
+        const item = placedWords.splice(placedIdx, 1)[0];
+        availableBankWords.push(item);
+        renderSent();
+    }
+
+    function checkSentenceCompletion() {
+        if (availableBankWords.length === 0) {
+            const attempt = placedWords.map(o => o.word).join(" ");
+            const target = currentSentWords.join(" ");
+            
+            if (attempt === target) {
+                document.getElementById('sent-feedback').classList.remove('hidden');
+                fireConfetti();
+                speakText(attempt); // Auto speak correct sentence
+            } else {
+                const slots = document.getElementById('sent-slots');
+                slots.classList.add('border-red-400', 'bg-red-50');
+                if('vibrate' in navigator) navigator.vibrate(200); // Haptic feedback
+                setTimeout(() => slots.classList.remove('border-red-400', 'bg-red-50'), 500);
+            }
+        }
+    }
+
+    window.nextSentence = function() {
+        currentSentIndex = (currentSentIndex + 1) % sentenceList.length;
+        loadSentence();
+    }
+
+    // ==========================================
+    // 🎯 QUIZ LOGIC
+    // ==========================================
+    window.nextQuestion = function() {
+        if(vocabList.length === 0) return;
+
+        const overlay = document.getElementById('feedback-overlay');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        
+        currentQuizItem = vocabList[Math.floor(Math.random() * vocabList.length)];
+        document.getElementById('q-word').innerText = currentQuizItem.en;
+
+        let options = [currentQuizItem];
+        let pool = [...vocabList];
+        
+        // Add fallback dummy data if list is small
+        if(pool.length < 4) {
+             pool.push({zh: "蘋果"}, {zh: "香蕉"}, {zh: "貓"});
+        }
+
+        while (options.length < 4) {
+            let rand = pool[Math.floor(Math.random() * pool.length)];
+            if (!options.some(o => o.zh === rand.zh)) options.push(rand);
+        }
+        shuffle(options);
+
+        const grid = document.getElementById('options-grid');
+        grid.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "w-full p-5 md:p-6 bg-white border-2 border-gray-100 rounded-2xl text-gray-600 font-bold hover:border-violet-400 hover:text-violet-600 hover:bg-violet-50 transition-all text-left shadow-sm active:scale-[0.98] text-lg md:text-xl flex items-center justify-between group";
+            btn.innerHTML = `
+                <span>${opt.zh}</span>
+                <i data-lucide="circle" class="w-5 h-5 text-gray-200 group-hover:text-violet-300"></i>
+            `;
+            btn.onclick = () => checkAnswer(opt, btn);
+            grid.appendChild(btn);
+        });
+        
+        // Re-init icons for new elements
+        lucide.createIcons();
+    }
+
+    function checkAnswer(selected, btnElement) {
+        const overlay = document.getElementById('feedback-overlay');
+        const icon = document.getElementById('feedback-icon');
+        const text = document.getElementById('feedback-text');
+        
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        
+        // Force reflow
+        void overlay.offsetWidth;
+        overlay.classList.remove('opacity-0');
+        icon.classList.remove('scale-0');
+        icon.classList.add('scale-100');
+
+        if (selected === currentQuizItem) {
+            score += 10;
+            streak++;
+            icon.innerText = "🎉";
+            text.innerText = "Correct!";
+            text.className = "text-4xl font-black text-green-500 mb-6";
+            
+            // Highlight button
+            btnElement.classList.remove('border-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+            // FIX: Re-render button content with new icon instead of searching for <i>
+            btnElement.innerHTML = `
+                <span>${selected.zh}</span>
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+            `;
+            
+            fireConfetti();
+            if('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+        } else {
+            streak = 0;
+            icon.innerText = "😢";
+            text.innerHTML = `<span class="text-sm text-gray-400 font-normal block mb-2">The answer is</span>${currentQuizItem.zh}`;
+            text.className = "text-3xl font-bold text-gray-800 mb-6";
+            
+            btnElement.classList.remove('border-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
+            // FIX: Re-render button content with new icon instead of searching for <i>
+            btnElement.innerHTML = `
+                <span>${selected.zh}</span>
+                <i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>
+            `;
+            
+            if('vibrate' in navigator) navigator.vibrate(300);
+        }
+        lucide.createIcons();
+        updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('score-display').innerText = score;
+        document.getElementById('streak-display').innerText = "🔥 " + streak;
+    }
+
+    function fireConfetti() {
+        if (typeof confetti !== 'undefined') {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#8B5CF6', '#F472B6', '#34D399', '#FBBF24'],
+                disableForReducedMotion: true
+            });
+        }
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Start
+    init();
+
+</script>
+</body>
+</html>
