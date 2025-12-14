@@ -81,13 +81,13 @@
                     <span class="flex items-center gap-3"><span class="text-2xl">❄️</span> 第二週：冬日與歷史</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
                 </button>
-                <button onclick="loadWeek(3)" class="w-full text-left p-4 rounded-xl hover:bg-gray-50 text-gray-400 font-medium transition-all flex justify-between items-center group cursor-not-allowed opacity-70" id="week-btn-3">
-                    <span class="flex items-center gap-3"><span class="text-2xl">🔒</span> 第三週：進階預習</span>
-                    <i data-lucide="lock" class="w-4 h-4 text-gray-300"></i>
+                <button onclick="loadWeek(3)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-3">
+                    <span class="flex items-center gap-3"><span class="text-2xl">🦆</span> 第三週：城市與自然</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
                 </button>
             </div>
             <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-gray-50">
-                Vocabulary App v3.5 (More Quizzes)
+                Vocabulary App v3.7 (Week 3 Added)
             </div>
         </div>
 
@@ -310,7 +310,7 @@
     // Updated: Removed "to " from verbs
     const courseData = {
         1: {
-            title: "English Vocab: Week 1",
+            title: "Week 1: 基礎篇",
             vocab: [
                 { en: "music", zh: "音樂", part: "n." },
                 { en: "lute", zh: "魯特琴", part: "n." },
@@ -443,7 +443,7 @@
             ]
         },
         2: {
-            title: "Week 2: Winter & History",
+            title: "Week 2: 冬日與歷史",
             vocab: [
                 { en: "player", zh: "玩家; 選手", part: "n." },
                 { en: "hit", zh: "打; 撞", part: "v." },
@@ -586,11 +586,129 @@
             ]
         },
         3: {
-            title: "English Vocab: Week 3",
-            vocab: [{ en: "coming soon", zh: "即將推出", part: "..." }],
-            sentences: [{ en: "Coming soon", zh: "內容即將推出" }],
-            grammar: { title: "Coming Soon", content: [] },
-            grammarQuiz: []
+            title: "Week 3: 城市與自然",
+            vocab: [
+                { en: "there is", zh: "(在某個地方) 有", part: "phr." },
+                { en: "there are", zh: "有", part: "phr." },
+                { en: "tradition", zh: "傳統", part: "n." },
+                { en: "duck", zh: "鴨", part: "n." },
+                { en: "field", zh: "場; 場地; 領域", part: "n." },
+                { en: "to eat", zh: "吃; 食用; 消耗", part: "v." },
+                { en: "insect", zh: "昆蟲", part: "n." },
+                { en: "plant", zh: "植物", part: "n." },
+                { en: "for free", zh: "免費", part: "phr." },
+                { en: "farmer", zh: "農民; 農夫", part: "n." },
+                { en: "chemical", zh: "化學物質", part: "n." },
+                { en: "thanks to", zh: "多虧了; 由於", part: "phr." },
+                { en: "to clean", zh: "清潔; 清理", part: "v." },
+                { en: "lots of", zh: "很多", part: "phr." },
+                { en: "rice", zh: "白米; 米飯", part: "n." },
+                { en: "photographer", zh: "攝影師", part: "n." },
+                { en: "basketball", zh: "籃球", part: "n." },
+                { en: "court", zh: "球場", part: "n." },
+                { en: "art gallery", zh: "畫廊; 美術館", part: "n." },
+                { en: "interested", zh: "感興趣的", part: "adj.", variants: "more interested" },
+                { en: "to look for", zh: "尋找", part: "phr." },
+                { en: "hundred", zh: "百", part: "num." },
+                { en: "city", zh: "城市; 市區", part: "n." },
+                { en: "between", zh: "之...之間", part: "prep." },
+                { en: "building", zh: "建築物", part: "n." },
+                { en: "rooftop", zh: "屋頂", part: "n." },
+                { en: "poetry", zh: "詩詞", part: "n." },
+                { en: "to look like", zh: "看起來像", part: "phr." },
+                { en: "century", zh: "世紀", part: "n." },
+                { en: "creative", zh: "有創造力的", part: "adj.", variants: "more creative" },
+                { en: "to meet", zh: "見面", part: "v." },
+                { en: "to talk", zh: "說話; 談話", part: "v." },
+                { en: "poet", zh: "詩人", part: "n." },
+                { en: "poem", zh: "詩", part: "n." },
+                { en: "private", zh: "私人的", part: "adj." },
+                { en: "word", zh: "單字; 文字", part: "n." }
+            ],
+            sentences: [
+                { en: "There is a duck in the field", zh: "田裡有一隻鴨子" },
+                { en: "Thanks to the farmer we have rice", zh: "多虧了農夫，我們有米飯" },
+                { en: "He is interested in poetry", zh: "他對詩詞感興趣" },
+                { en: "The city looks like a picture", zh: "這座城市看起來像一幅畫" },
+                { en: "There are lots of insects on the plant", zh: "植物上有很多昆蟲" },
+                { en: "The photographer is looking for a good shot", zh: "攝影師正在尋找一個好鏡頭" },
+                { en: "We met at the art gallery", zh: "我們在美術館見面" },
+                { en: "There is a basketball court on the rooftop", zh: "屋頂上有一個籃球場" },
+                { en: "This tradition is centuries old", zh: "這個傳統已經有幾個世紀了" },
+                { en: "I want to talk to you in private", zh: "我想私下跟你談談" }
+            ],
+            grammar: {
+                title: "Week 3 句型與文法",
+                subtitle: "There is / Thanks to / Interested in",
+                content: [
+                    {
+                        type: "rule",
+                        title: "There is / There are (有...存在)",
+                        desc: "用來表示某個地方「有」人或物。<br>There is + 單數名詞<br>There are + 複數名詞",
+                        highlight: true,
+                        examples: [
+                            { en: "There is a duck in the field.", zh: "田裡有一隻鴨子。" },
+                            { en: "There are lots of insects.", zh: "有很多昆蟲。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "Thanks to (多虧了 / 由於)",
+                        desc: "表示原因，通常帶有正面的感激之意。",
+                        examples: [
+                            { en: "Thanks to the rain, the plants grow well.", zh: "多虧了這場雨，植物長得很好。" },
+                            { en: "Thanks to your help, we finished.", zh: "多虧了你的幫忙，我們完成了。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "be interested in (對...感興趣)",
+                        desc: "主詞通常是人，後面接名詞或 V-ing。",
+                        examples: [
+                            { en: "I am interested in art.", zh: "我對藝術感興趣。" },
+                            { en: "She is interested in learning English.", zh: "她對學英文感興趣。" }
+                        ]
+                    }
+                ]
+            },
+            grammarQuiz: [
+                {
+                    q: "___ are lots of birds in the sky.",
+                    options: ["There", "This", "That", "It"],
+                    answer: "There",
+                    hint: "There are + 複數名詞。"
+                },
+                {
+                    q: "She is interested ___ music.",
+                    options: ["on", "at", "in", "with"],
+                    answer: "in",
+                    hint: "片語 be interested in。"
+                },
+                {
+                    q: "Thanks ___ your help.",
+                    options: ["for", "to", "at", "by"],
+                    answer: "to",
+                    hint: "片語 Thanks to (多虧了)。"
+                },
+                {
+                    q: "There ___ a book on the table.",
+                    options: ["are", "am", "is", "be"],
+                    answer: "is",
+                    hint: "There is + 單數名詞 (a book)。"
+                },
+                {
+                    q: "He is looking ___ his keys.",
+                    options: ["at", "for", "to", "on"],
+                    answer: "for",
+                    hint: "look for (尋找)。"
+                },
+                {
+                    q: "___ to the nice weather, we can go out.",
+                    options: ["Thank", "Thanks", "Thanking", "Thanked"],
+                    answer: "Thanks",
+                    hint: "Thanks to (多虧了)。"
+                }
+            ]
         }
     };
 
@@ -662,8 +780,10 @@
             const btn = document.getElementById(`week-btn-${id}`);
             if(id === weekId) {
                 btn.classList.add('bg-violet-50', 'text-violet-700');
+                btn.classList.remove('text-gray-700');
             } else {
                 btn.classList.remove('bg-violet-50', 'text-violet-700');
+                btn.classList.add('text-gray-700');
             }
         });
 
