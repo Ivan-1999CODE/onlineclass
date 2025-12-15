@@ -87,7 +87,7 @@
                 </button>
             </div>
             <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-gray-50">
-                Vocabulary App v3.7 (Week 3 Added)
+                Vocabulary App v4.1 (Week 3 Updated)
             </div>
         </div>
 
@@ -235,35 +235,57 @@
 
             <!-- VIEW: QUIZ -->
             <div id="view-quiz" class="hidden h-full flex flex-col max-w-2xl mx-auto w-full">
-                <div class="flex justify-between items-end mb-6 px-2">
+                <!-- Score Header -->
+                <div class="flex justify-between items-end mb-4 px-2">
                     <div class="flex flex-col">
                         <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Score</span>
                         <span id="score-display" class="text-3xl font-black text-violet-600 leading-none">0</span>
                     </div>
-                    <div class="bg-orange-50 px-3 py-1 rounded-lg border border-orange-100">
-                        <span class="text-sm text-orange-600 font-bold">Streak: <span id="streak-display">🔥 0</span></span>
+                    <div class="flex flex-col items-end">
+                         <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Question</span>
+                         <span class="text-xl font-bold text-gray-700"><span id="q-current">1</span>/<span id="q-total">10</span></span>
                     </div>
                 </div>
 
-                <div class="bg-white border border-gray-100 rounded-3xl p-8 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] mb-8 relative overflow-hidden shrink-0">
-                    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400"></div>
-                    <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">What is the meaning of?</span>
-                    <h2 id="q-word" class="text-3xl md:text-4xl font-black text-gray-800 mt-3 mb-1">Word</h2>
+                <!-- Timer Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+                  <div id="timer-bar" class="bg-violet-500 h-2.5 rounded-full transition-all duration-100 ease-linear" style="width: 100%"></div>
                 </div>
 
-                <!-- Grid Layout: 1 col on mobile, 2 cols on tablet/desktop -->
-                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 overflow-y-auto pb-6 px-1">
-                    <!-- Options injected here -->
+                <!-- Game Container -->
+                <div id="quiz-game-container" class="flex-1 flex flex-col overflow-hidden">
+                    <div class="bg-white border border-gray-100 rounded-3xl p-8 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] mb-8 relative overflow-hidden shrink-0">
+                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-violet-400 via-fuchsia-400 to-violet-400"></div>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">What is the meaning of?</span>
+                        <h2 id="q-word" class="text-3xl md:text-4xl font-black text-gray-800 mt-3 mb-1">Word</h2>
+                    </div>
+
+                    <!-- Grid Layout -->
+                    <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 overflow-y-auto pb-6 px-1">
+                        <!-- Options injected here -->
+                    </div>
+                </div>
+
+                <!-- Result Screen (Hidden by default) -->
+                <div id="quiz-result-screen" class="hidden flex-1 flex-col items-center justify-center text-center pb-10">
+                    <div class="w-24 h-24 bg-violet-100 rounded-full flex items-center justify-center mb-6 text-5xl">
+                        🏆
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-400 mb-2">Quiz Complete!</h2>
+                    <h1 class="text-5xl font-black text-violet-600 mb-8" id="final-score">0</h1>
+                    
+                    <button onclick="startQuiz()" class="px-10 py-4 bg-violet-600 text-white rounded-full font-bold shadow-xl shadow-violet-200 hover:bg-violet-700 active:scale-95 transition-all text-lg flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                        <span>再玩一次</span>
+                    </button>
                 </div>
 
                 <!-- Quiz Feedback Overlay -->
                 <div id="feedback-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-md z-20 hidden opacity-0 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center">
                     <div id="feedback-icon" class="text-7xl mb-6 transform scale-0 transition-transform duration-300 drop-shadow-md">🎉</div>
                     <h3 id="feedback-text" class="text-3xl font-black text-gray-800 mb-6">Correct!</h3>
-                    <button onclick="nextQuestion()" class="px-10 py-4 bg-violet-600 text-white rounded-full font-bold shadow-xl shadow-violet-200 hover:bg-violet-700 active:scale-95 transition-all text-lg flex items-center gap-2">
-                        <span>下一題</span>
-                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                    </button>
+                    <!-- Feedback points added dynamically -->
+                    <p id="feedback-points" class="text-xl font-bold text-violet-500 mb-6"></p>
                 </div>
             </div>
 
@@ -623,7 +645,19 @@
                 { en: "poet", zh: "詩人", part: "n." },
                 { en: "poem", zh: "詩", part: "n." },
                 { en: "private", zh: "私人的", part: "adj." },
-                { en: "word", zh: "單字; 文字", part: "n." }
+                { en: "word", zh: "單字; 文字", part: "n." },
+                { en: "life", zh: "生命", part: "n.", variants: "lives" },
+                { en: "provide", zh: "提供; 供給", part: "v." },
+                { en: "disappear", zh: "消失; 不見", part: "v." },
+                { en: "simple", zh: "簡單的", part: "adj." },
+                { en: "less", zh: "較少的; 較小的", part: "adj." },
+                { en: "borrow", zh: "借入; 借用", part: "v." },
+                { en: "careful", zh: "小心的; 仔細的", part: "adj." },
+                { en: "forest", zh: "森林", part: "n." },
+                { en: "burn", zh: "燃燒; 燒毀", part: "v." },
+                { en: "make sure", zh: "確保; 確定", part: "phr." },
+                { en: "plant", zh: "種植", part: "v." },
+                { en: "brothel", zh: "妓院", part: "n." }
             ],
             sentences: [
                 { en: "There is a duck in the field", zh: "田裡有一隻鴨子" },
@@ -639,7 +673,7 @@
             ],
             grammar: {
                 title: "Week 3 句型與文法",
-                subtitle: "There is / Thanks to / Interested in",
+                subtitle: "There is / Thanks to / Interested in / Can & Careful",
                 content: [
                     {
                         type: "rule",
@@ -667,6 +701,33 @@
                         examples: [
                             { en: "I am interested in art.", zh: "我對藝術感興趣。" },
                             { en: "She is interested in learning English.", zh: "她對學英文感興趣。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "can/can't + Vr",
+                        desc: "(不) 能夠... ; (不) 可以... (表示能力或許可)",
+                        examples: [
+                            { en: "Ben can dance and play the guitar.", zh: "班會跳舞跟彈吉他。" },
+                            { en: "You can't smoke here.", zh: "你不能在這裡抽菸。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "instead of + N/Ving",
+                        desc: "而不是；代替",
+                        examples: [
+                            { en: "Maria ordered tea instead of coffee.", zh: "瑪莉亞點的是茶，不是咖啡。" },
+                            { en: "Instead of staying at home, Dad went swimming.", zh: "爸爸今天早上沒有待在家，他去游泳了。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "be careful with ~",
+                        desc: "當心... ；注意...",
+                        examples: [
+                            { en: "Please be careful with my car.", zh: "請小心我的車。" },
+                            { en: "David is careful with the baby.", zh: "大衛小心翼翼地對待那嬰兒。" }
                         ]
                     }
                 ]
@@ -707,6 +768,24 @@
                     options: ["Thank", "Thanks", "Thanking", "Thanked"],
                     answer: "Thanks",
                     hint: "Thanks to (多虧了)。"
+                },
+                {
+                    q: "Ben ___ dance well.",
+                    options: ["cans", "can", "to can", "canning"],
+                    answer: "can",
+                    hint: "情態助動詞 can 後接原形動詞。"
+                },
+                {
+                    q: "He drank water instead ___ soda.",
+                    options: ["of", "to", "for", "with"],
+                    answer: "of",
+                    hint: "instead of (而不是)。"
+                },
+                {
+                    q: "Please be careful ___ the knife.",
+                    options: ["at", "on", "with", "to"],
+                    answer: "with",
+                    hint: "be careful with + 物品。"
                 }
             ]
         }
@@ -727,6 +806,11 @@
     let score = 0;
     let streak = 0;
     let currentQuizItem = null;
+    let quizTimer = null;
+    let timeLeft = 10;
+    const QUIZ_TOTAL_QUESTIONS = 10;
+    const TIME_LIMIT = 10; // seconds
+    let currentQuestionNum = 0;
 
     // Sentence State
     let currentSentIndex = 0;
@@ -791,8 +875,7 @@
         currentIndex = 0;
         currentSentIndex = 0;
         currentGQuizIndex = 0;
-        score = 0;
-        streak = 0;
+        // Don't reset score/quiz here, only when starting quiz mode or finishing
         updateStats();
 
         // Separate shuffle for Flashcards and Quiz to keep list view somewhat consistent (optional, but shuffling list view is better for learning)
@@ -803,7 +886,7 @@
         updateFlashcard();
         renderStudyList(); 
         if (currentMode === 'sentence') initSentenceLevel();
-        if (currentMode === 'quiz') nextQuestion();
+        if (currentMode === 'quiz') startQuiz(); // Auto start quiz when loading week if in quiz mode
         if (currentMode === 'grammar') renderGrammar();
         if (currentMode === 'grammar-quiz') initGrammarQuiz();
 
@@ -836,7 +919,7 @@
         // Scroll content area to top
         document.getElementById('content-area').scrollTop = 0;
 
-        if (mode === 'quiz') nextQuestion();
+        if (mode === 'quiz') startQuiz(); // Start new quiz session
         if (mode === 'sentence') initSentenceLevel();
         if (mode === 'grammar') renderGrammar();
         if (mode === 'grammar-quiz') initGrammarQuiz();
@@ -1233,22 +1316,52 @@
     }
 
     // ==========================================
-    // 🎯 QUIZ LOGIC
+    // 🎯 QUIZ LOGIC (TIMED)
     // ==========================================
+    
+    window.startQuiz = function() {
+        // Reset State
+        score = 0;
+        currentQuestionNum = 0;
+        updateStats();
+        
+        // UI Handling
+        document.getElementById('quiz-result-screen').classList.add('hidden');
+        document.getElementById('quiz-game-container').classList.remove('hidden');
+        document.getElementById('quiz-game-container').classList.add('flex', 'flex-col');
+        
+        nextQuestion();
+    }
+
     window.nextQuestion = function() {
         if(vocabList.length === 0) return;
+        
+        // Stop previous timer if any
+        if(quizTimer) clearInterval(quizTimer);
 
+        // Check Round Limit
+        if(currentQuestionNum >= QUIZ_TOTAL_QUESTIONS) {
+            endQuiz();
+            return;
+        }
+
+        currentQuestionNum++;
+        document.getElementById('q-current').innerText = currentQuestionNum;
+        document.getElementById('q-total').innerText = QUIZ_TOTAL_QUESTIONS;
+
+        // Reset UI for new Question
         const overlay = document.getElementById('feedback-overlay');
         overlay.classList.add('hidden');
         overlay.classList.remove('flex');
         
+        // Pick Random Word
         currentQuizItem = vocabList[Math.floor(Math.random() * vocabList.length)];
         document.getElementById('q-word').innerText = currentQuizItem.en;
 
+        // Generate Options
         let options = [currentQuizItem];
         let pool = [...vocabList];
         
-        // Add fallback dummy data if list is small
         if(pool.length < 4) {
              pool.push({zh: "蘋果"}, {zh: "香蕉"}, {zh: "貓"});
         }
@@ -1259,6 +1372,7 @@
         }
         shuffle(options);
 
+        // Render Options
         const grid = document.getElementById('options-grid');
         grid.innerHTML = '';
         options.forEach(opt => {
@@ -1272,14 +1386,121 @@
             grid.appendChild(btn);
         });
         
-        // Re-init icons for new elements
         lucide.createIcons();
+
+        // Start Timer
+        startTimer();
+    }
+
+    function startTimer() {
+        timeLeft = TIME_LIMIT;
+        updateTimerBar();
+        
+        // Update every 100ms for smooth bar
+        quizTimer = setInterval(() => {
+            timeLeft -= 0.1;
+            updateTimerBar();
+            
+            if (timeLeft <= 0) {
+                clearInterval(quizTimer);
+                handleTimeout();
+            }
+        }, 100);
+    }
+
+    function updateTimerBar() {
+        const percentage = (timeLeft / TIME_LIMIT) * 100;
+        const bar = document.getElementById('timer-bar');
+        bar.style.width = `${percentage}%`;
+        
+        // Color change based on time
+        if(percentage < 30) {
+            bar.classList.remove('bg-violet-500', 'bg-yellow-400');
+            bar.classList.add('bg-red-500');
+        } else if(percentage < 60) {
+            bar.classList.remove('bg-violet-500', 'bg-red-500');
+            bar.classList.add('bg-yellow-400');
+        } else {
+            bar.classList.remove('bg-yellow-400', 'bg-red-500');
+            bar.classList.add('bg-violet-500');
+        }
+    }
+
+    function handleTimeout() {
+        // Disable all buttons
+        const grid = document.getElementById('options-grid');
+        const buttons = grid.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            if(btn.innerText.includes(currentQuizItem.zh)) {
+                btn.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+            }
+        });
+
+        // Show timeout feedback
+        showFeedback(false, 0, true);
     }
 
     function checkAnswer(selected, btnElement) {
+        clearInterval(quizTimer);
+        
+        const grid = document.getElementById('options-grid');
+        const buttons = grid.querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true); // Prevent double click
+
+        if (selected === currentQuizItem) {
+            // Calculate Score based on timeLeft
+            // Max 100 points. Formula: (timeLeft / 10) * 100
+            // Example: 9s left -> 90 pts. 1s left -> 10 pts.
+            // Minimum 10 pts for correct answer if > 0s
+            let points = Math.ceil((timeLeft / TIME_LIMIT) * 100);
+            if(points > 100) points = 100;
+            if(points < 10) points = 10; 
+
+            score += points;
+            streak++;
+            
+            // UI
+            btnElement.classList.remove('border-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+            btnElement.innerHTML = `
+                <span>${selected.zh}</span>
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+            `;
+            
+            fireConfetti();
+            if('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+            
+            showFeedback(true, points);
+        } else {
+            streak = 0;
+            // UI
+            btnElement.classList.remove('border-gray-100', 'text-gray-600');
+            btnElement.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
+            btnElement.innerHTML = `
+                <span>${selected.zh}</span>
+                <i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>
+            `;
+            
+            // Highlight correct one
+            buttons.forEach(btn => {
+                if(btn.innerText.includes(currentQuizItem.zh)) {
+                    btn.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
+                }
+            });
+
+            if('vibrate' in navigator) navigator.vibrate(300);
+            showFeedback(false, 0);
+        }
+        lucide.createIcons();
+        updateStats();
+    }
+
+    function showFeedback(isCorrect, points, isTimeout = false) {
         const overlay = document.getElementById('feedback-overlay');
         const icon = document.getElementById('feedback-icon');
         const text = document.getElementById('feedback-text');
+        const ptsDisplay = document.getElementById('feedback-points');
         
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
@@ -1290,47 +1511,47 @@
         icon.classList.remove('scale-0');
         icon.classList.add('scale-100');
 
-        if (selected === currentQuizItem) {
-            score += 10;
-            streak++;
+        if(isTimeout) {
+            icon.innerText = "⏰";
+            text.innerText = "Time's Up!";
+            text.className = "text-3xl font-black text-gray-800 mb-2";
+            ptsDisplay.innerText = "+0 pts";
+            ptsDisplay.className = "text-xl font-bold text-gray-400 mb-6";
+        } else if (isCorrect) {
             icon.innerText = "🎉";
             text.innerText = "Correct!";
-            text.className = "text-4xl font-black text-green-500 mb-6";
-            
-            // Highlight button
-            btnElement.classList.remove('border-gray-100', 'text-gray-600');
-            btnElement.classList.add('bg-green-50', 'border-green-500', 'text-green-700');
-            // FIX: Re-render button content with new icon instead of searching for <i>
-            btnElement.innerHTML = `
-                <span>${selected.zh}</span>
-                <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
-            `;
-            
-            fireConfetti();
-            if('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+            text.className = "text-4xl font-black text-green-500 mb-2";
+            ptsDisplay.innerText = `+${points} pts`;
+            ptsDisplay.className = "text-xl font-bold text-green-600 mb-6";
         } else {
-            streak = 0;
             icon.innerText = "😢";
             text.innerHTML = `<span class="text-sm text-gray-400 font-normal block mb-2">The answer is</span>${currentQuizItem.zh}`;
-            text.className = "text-3xl font-bold text-gray-800 mb-6";
-            
-            btnElement.classList.remove('border-gray-100', 'text-gray-600');
-            btnElement.classList.add('bg-red-50', 'border-red-500', 'text-red-700');
-            // FIX: Re-render button content with new icon instead of searching for <i>
-            btnElement.innerHTML = `
-                <span>${selected.zh}</span>
-                <i data-lucide="x-circle" class="w-5 h-5 text-red-600"></i>
-            `;
-            
-            if('vibrate' in navigator) navigator.vibrate(300);
+            text.className = "text-3xl font-bold text-gray-800 mb-2";
+            ptsDisplay.innerText = "+0 pts";
+            ptsDisplay.className = "text-xl font-bold text-red-400 mb-6";
         }
-        lucide.createIcons();
-        updateStats();
+
+        // Auto Advance
+        setTimeout(() => {
+            nextQuestion();
+        }, 1500); // 1.5 seconds delay
+    }
+
+    function endQuiz() {
+        document.getElementById('quiz-game-container').classList.add('hidden');
+        document.getElementById('quiz-game-container').classList.remove('flex');
+        
+        const resultScreen = document.getElementById('quiz-result-screen');
+        resultScreen.classList.remove('hidden');
+        resultScreen.classList.add('flex');
+        
+        document.getElementById('final-score').innerText = score;
+        fireConfetti();
     }
 
     function updateStats() {
         document.getElementById('score-display').innerText = score;
-        document.getElementById('streak-display').innerText = "🔥 " + streak;
+        // Don't show streak on results screen to keep UI clean, but keep tracking it
     }
 
     function fireConfetti() {
