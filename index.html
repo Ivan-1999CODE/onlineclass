@@ -78,14 +78,18 @@
                     <span class="flex items-center gap-3"><span class="text-2xl">🦆</span> 第三週：城市與自然</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
                 </button>
-                <!-- WEEK 4 -->
                 <button onclick="loadWeek(4)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-4">
                     <span class="flex items-center gap-3"><span class="text-2xl">🍔</span> 第四週：飲食與句型</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
                 </button>
+                <!-- WEEK 5 NEW -->
+                <button onclick="loadWeek(5)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-5">
+                    <span class="flex items-center gap-3"><span class="text-2xl">🏕️</span> 第五週：戶外與休閒</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
+                </button>
             </div>
             <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-gray-50">
-                Vocabulary App v4.7 (Week 4 Updated)
+                Vocabulary App v4.8 (Week 5 Added)
             </div>
         </div>
 
@@ -1007,6 +1011,140 @@
                     hint: "Car 是單數，使用 another。"
                 }
             ]
+        },
+        // NEW WEEK 5: Sports & Hobbies (Inferred from context and user constraint)
+        5: {
+            title: "Week 5: 戶外與休閒",
+            vocab: [
+                { en: "badminton", zh: "羽毛球", part: "n." },
+                { en: "baseball", zh: "棒球", part: "n." },
+                { en: "basketball", zh: "籃球", part: "n." },
+                { en: "dodge ball", zh: "躲避球", part: "n." },
+                { en: "tennis", zh: "網球", part: "n." },
+                { en: "soccer", zh: "足球", part: "n." },
+                { en: "sport", zh: "運動", part: "n." },
+                { en: "player", zh: "運動員; 選手", part: "n." },
+                { en: "gym", zh: "體育館; 健身房", part: "n." },
+                { en: "fan", zh: "狂熱愛好者; 粉絲", part: "n." },
+                { en: "team", zh: "隊伍", part: "n." },
+                { en: "game", zh: "比賽; 遊戲", part: "n." },
+                { en: "race", zh: "賽跑; 比賽", part: "n." },
+                { en: "reporter", zh: "記者", part: "n." },
+                { en: "lose", zh: "輸", part: "v." },
+                { en: "win", zh: "贏", part: "v." },
+                { en: "practice", zh: "練習", part: "v." }, // Removed "to"
+                { en: "cheer", zh: "歡呼; 加油", part: "v." }, // Removed "to"
+                { en: "join", zh: "參加", part: "v." }, // Removed "to"
+                { en: "often", zh: "經常", part: "adv." },
+                { en: "sometimes", zh: "有時候", part: "adv." },
+                { en: "usually", zh: "通常", part: "adv." },
+                { en: "always", zh: "總是", part: "adv." },
+                { en: "never", zh: "從不", part: "adv." },
+                { en: "once", zh: "一次", part: "adv." },
+                { en: "twice", zh: "兩次", part: "adv." },
+                { en: "every", zh: "每一個", part: "adj." }
+            ],
+            sentences: [
+                { en: "I often play baseball on weekends", zh: "我經常在週末打棒球" },
+                { en: "They practice soccer every day", zh: "他們每天練習足球" },
+                { en: "She wants to join the team", zh: "她想要加入這個隊伍" },
+                { en: "The fans cheer for the players", zh: "粉絲們為球員加油" },
+                { en: "He never goes to the gym", zh: "他從不去健身房" },
+                { en: "We play badminton twice a week", zh: "我們一週打兩次羽毛球" },
+                { en: "Winning the game is not easy", zh: "贏得比賽並不容易" },
+                { en: "Who is your favorite player", zh: "誰是你最喜歡的球員" },
+                { en: "I usually watch sports on TV", zh: "我通常在電視上看體育節目" },
+                { en: "Do you like playing dodge ball", zh: "你喜歡打躲避球嗎" }
+            ],
+            grammar: {
+                title: "Week 5 頻率副詞",
+                subtitle: "Frequency Adverbs / How often",
+                content: [
+                    {
+                        type: "rule",
+                        title: "頻率副詞的位置",
+                        desc: "1. Be 動詞之後 (be + 頻率)<br>2. 一般動詞之前 (頻率 + V)<br>3. 助動詞之後 (will/can + 頻率 + V)",
+                        highlight: true,
+                        examples: [
+                            { en: "He is always late.", zh: "他總是遲到 (be + always)。" },
+                            { en: "I often play tennis.", zh: "我經常打網球 (often + play)。" },
+                            { en: "They usually eat dinner at 6.", zh: "他們通常在六點吃晚餐。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "How often 詢問頻率",
+                        desc: "用來詢問做某事的頻率有多高。",
+                        examples: [
+                            { en: "A: How often do you swim?", zh: "A: 你多久游泳一次？" },
+                            { en: "B: I swim twice a week.", zh: "B: 我一週游兩次。" },
+                            { en: "Once a month / Three times a year", zh: "一個月一次 / 一年三次" }
+                        ]
+                    },
+                    {
+                        type: "table",
+                        title: "頻率程度表",
+                        data: [
+                            { sub: "Always", aux: "100% (總是)" },
+                            { sub: "Usually", aux: "80% (通常)" },
+                            { sub: "Often", aux: "60% (經常)" },
+                            { sub: "Sometimes", aux: "40% (有時候)" },
+                            { sub: "Seldom", aux: "20% (很少)" },
+                            { sub: "Never", aux: "0% (從不)" }
+                        ]
+                    }
+                ]
+            },
+            grammarQuiz: [
+                {
+                    q: "I ___ play basketball after school.",
+                    options: ["often", "oftens", "to often", "often to"],
+                    answer: "often",
+                    hint: "頻率副詞放在一般動詞(play)之前。"
+                },
+                {
+                    q: "She is ___ happy.",
+                    options: ["always", "play", "do", "does"],
+                    answer: "always",
+                    hint: "頻率副詞(always)放在Be動詞(is)之後。"
+                },
+                {
+                    q: "___ often do you practice?",
+                    options: ["What", "How", "Who", "Where"],
+                    answer: "How",
+                    hint: "詢問頻率使用 How often。"
+                },
+                {
+                    q: "I go to the gym ___ a week.",
+                    options: ["one", "once", "first", "ones"],
+                    answer: "once",
+                    hint: "一次 (once)。"
+                },
+                {
+                    q: "He ___ eats vegetables. He hates them.",
+                    options: ["always", "usually", "often", "never"],
+                    answer: "never",
+                    hint: "因為他討厭蔬菜，所以應選「從不」。"
+                },
+                {
+                    q: "They ___ soccer on Sundays.",
+                    options: ["plays", "play", "playing", "to play"],
+                    answer: "play",
+                    hint: "They 是複數，動詞用原形 play。"
+                },
+                {
+                    q: "We play baseball three ___ a month.",
+                    options: ["time", "times", "timing", "timed"],
+                    answer: "times",
+                    hint: "三次 (three times)。"
+                },
+                {
+                    q: "Do you want to ___ the team?",
+                    options: ["join", "joins", "joining", "joined"],
+                    answer: "join",
+                    hint: "want to 後面接原形動詞。"
+                }
+            ]
         }
     };
 
@@ -1079,8 +1217,8 @@
         
         document.getElementById('header-title').innerText = data.title;
         
-        // Updated loop for Week 4
-        [1, 2, 3, 4].forEach(id => {
+        // Updated loop for Week 5
+        [1, 2, 3, 4, 5].forEach(id => {
             const btn = document.getElementById(`week-btn-${id}`);
             if (btn) { // Safety check
                 if(id === weekId) {
