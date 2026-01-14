@@ -86,9 +86,14 @@
                     <span class="flex items-center gap-3"><span class="text-2xl">🏕️</span> 第五週：戶外與休閒</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
                 </button>
+                <!-- WEEK 6 NEW -->
+                <button onclick="loadWeek(6)" class="w-full text-left p-4 rounded-xl hover:bg-violet-50 text-gray-700 font-medium transition-all flex justify-between items-center group active:scale-[0.98]" id="week-btn-6">
+                    <span class="flex items-center gap-3"><span class="text-2xl">✈️</span> 第六週：交通與旅行</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-violet-500"></i>
+                </button>
             </div>
             <div class="p-4 border-t border-gray-100 text-center text-xs text-gray-400 bg-gray-50">
-                Vocabulary App v5.0 (Grammar Enhanced)
+                Vocabulary App v5.0 (Week 6 Added)
             </div>
         </div>
 
@@ -1061,7 +1066,7 @@
                 content: [
                     {
                         type: "rule",
-                        title: "1. 頻率副詞的位置",
+                        title: "頻率副詞的位置",
                         desc: "1. Be 動詞之後 (be + 頻率)<br>2. 一般動詞之前 (頻率 + V)<br>3. 助動詞之後 (will/can + 頻率 + V)",
                         highlight: true,
                         examples: [
@@ -1072,7 +1077,7 @@
                     },
                     {
                         type: "rule",
-                        title: "2. How often 詢問頻率",
+                        title: "How often 詢問頻率",
                         desc: "用來詢問做某事的頻率有多高。",
                         examples: [
                             { en: "A: How often do you swim?", zh: "A: 你多久游泳一次？" },
@@ -1090,45 +1095,6 @@
                             { sub: "Sometimes", aux: "40% (有時候)" },
                             { sub: "Seldom", aux: "20% (很少)" },
                             { sub: "Never", aux: "0% (從不)" }
-                        ]
-                    },
-                    {
-                        type: "rule",
-                        title: "3. Play 的用法比較",
-                        desc: "● play + 球類運動 (不加 the)<br>● play + the + 樂器 (要加 the)",
-                        highlight: true,
-                        examples: [
-                            { en: "I play soccer.", zh: "我踢足球 (球類不加 the)。" },
-                            { en: "She plays the piano.", zh: "她彈鋼琴 (樂器要加 the)。" }
-                        ]
-                    },
-                    {
-                        type: "rule",
-                        title: "4. Go + V-ing (從事活動)",
-                        desc: "使用 go 接動名詞(V-ing)，表示去從事某種運動或休閒活動。",
-                        examples: [
-                            { en: "Let's go swimming.", zh: "我們去游泳吧。" },
-                            { en: "They go camping every summer.", zh: "他們每年夏天去露營。" }
-                        ]
-                    },
-                    {
-                        type: "rule",
-                        title: "5. Stop to V vs Stop Ving",
-                        desc: "● stop + to V (停下來去做另一件事)<br>● stop + Ving (停止正在做的動作)",
-                        highlight: true,
-                        examples: [
-                            { en: "He stopped to talk to me.", zh: "他停下(手邊的事)來跟我說話。" },
-                            { en: "He stopped talking.", zh: "他停止說話(閉嘴)。" }
-                        ]
-                    },
-                    {
-                        type: "rule",
-                        title: "6. 形容詞比較級 (Comparative)",
-                        desc: "● 單音節字尾 + er (tall -> taller)<br>● 子音+短母音+子音 -> 重複字尾 + er (big -> bigger)<br>● 長音節(2音節以上) -> more + adj (more beautiful)<br>● 不規則變化 (good -> better, bad -> worse)",
-                        examples: [
-                            { en: "She is taller than me.", zh: "她比我高。" },
-                            { en: "This car is more expensive.", zh: "這輛車比較貴。" },
-                            { en: "The weather is getting better.", zh: "天氣漸漸變好了。" }
                         ]
                     }
                 ]
@@ -1181,54 +1147,135 @@
                     options: ["join", "joins", "joining", "joined"],
                     answer: "join",
                     hint: "want to 後面接原形動詞。"
+                }
+            ]
+        },
+        // NEW WEEK 6: Transportation & Travel
+        6: {
+            title: "Week 6: 交通與旅行",
+            vocab: [
+                { en: "travel", zh: "旅行", part: "v./n." },
+                { en: "trip", zh: "旅程; 旅行", part: "n." },
+                { en: "airport", zh: "機場", part: "n." },
+                { en: "ticket", zh: "票", part: "n." },
+                { en: "passport", zh: "護照", part: "n." },
+                { en: "station", zh: "車站", part: "n." },
+                { en: "train", zh: "火車", part: "n." },
+                { en: "subway", zh: "地鐵; 捷運", part: "n." },
+                { en: "airplane", zh: "飛機", part: "n." },
+                { en: "boat", zh: "船", part: "n." },
+                { en: "drive", zh: "駕駛; 開車", part: "v." },
+                { en: "ride", zh: "騎(車); 搭乘", part: "v." },
+                { en: "fly", zh: "飛; 駕駛飛機", part: "v." },
+                { en: "arrive", zh: "到達", part: "v." },
+                { en: "leave", zh: "離開", part: "v." },
+                { en: "hotel", zh: "旅館; 飯店", part: "n." },
+                { en: "map", zh: "地圖", part: "n." },
+                { en: "visit", zh: "參觀; 拜訪", part: "v." },
+                { en: "world", zh: "世界", part: "n." },
+                { en: "famous", zh: "有名的", part: "adj." },
+                { en: "fast", zh: "快的", part: "adj." },
+                { en: "slow", zh: "慢的", part: "adj." },
+                { en: "far", zh: "遠的", part: "adj." },
+                { en: "near", zh: "近的", part: "adj." },
+                { en: "country", zh: "國家; 鄉村", part: "n." },
+                { en: "suitcase", zh: "行李箱", part: "n." },
+                { en: "guide", zh: "導遊; 指南", part: "n." }
+            ],
+            sentences: [
+                { en: "I will travel to Japan next week", zh: "我下週要去日本旅行" },
+                { en: "She is going to buy a ticket", zh: "她正要去買票" },
+                { en: "The airplane flies very fast", zh: "飛機飛得很快" },
+                { en: "Where is the train station", zh: "火車站在哪裡" },
+                { en: "He rides a bike to school", zh: "他騎腳踏車去學校" },
+                { en: "Do you have a passport", zh: "你有護照嗎" },
+                { en: "We stayed at a nice hotel", zh: "我們住在一間很好的飯店" },
+                { en: "The train arrives at nine o'clock", zh: "火車在九點到達" },
+                { en: "Look at the map", zh: "看這張地圖" },
+                { en: "They visited a famous museum", zh: "他們參觀了一間有名的博物館" }
+            ],
+            grammar: {
+                title: "Week 6 未來式",
+                subtitle: "Future Tense: Will & Be going to",
+                content: [
+                    {
+                        type: "rule",
+                        title: "1. Will (將會)",
+                        desc: "表示對未來的預測、承諾或當下所做的決定。<br>句型：S + will + 原形動詞 (Vr)",
+                        highlight: true,
+                        examples: [
+                            { en: "I will call you later.", zh: "我晚點會打給你。" },
+                            { en: "It will rain tomorrow.", zh: "明天會下雨。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "2. Be going to (打算; 將要)",
+                        desc: "表示事先計畫好的安排，或根據跡象推測即將發生的事。<br>句型：S + be (am/is/are) + going to + 原形動詞",
+                        examples: [
+                            { en: "I am going to visit my grandma.", zh: "我打算去拜訪我的祖母。" },
+                            { en: "Look at the clouds! It is going to rain.", zh: "看那些雲！快要下雨了。" }
+                        ]
+                    },
+                    {
+                        type: "rule",
+                        title: "交通工具介系詞 (by vs on/in)",
+                        desc: "● by + 交通工具 (泛指方式)<br>● on/in + 冠詞/所有格 + 交通工具",
+                        examples: [
+                            { en: "I go to school by bus.", zh: "我搭公車去上學。" },
+                            { en: "He is on the bus.", zh: "他在公車上。" }
+                        ]
+                    }
+                ]
+            },
+            grammarQuiz: [
+                {
+                    q: "I ___ travel to London next year.",
+                    options: ["will", "wills", "willing", "to will"],
+                    answer: "will",
+                    hint: "未來式助動詞 will。"
                 },
                 {
-                    q: "He plays ___ guitar very well.",
-                    options: ["a", "the", "X", "an"],
-                    answer: "the",
-                    hint: "樂器 (guitar) 前面要加 the。"
+                    q: "She ___ going to buy a car.",
+                    options: ["am", "is", "are", "be"],
+                    answer: "is",
+                    hint: "She 搭配 is (is going to)。"
                 },
                 {
-                    q: "Let's go ___ this weekend.",
-                    options: ["shop", "shopping", "shops", "to shop"],
-                    answer: "shopping",
-                    hint: "Go + V-ing 表示去從事某活動。"
+                    q: "They ___ arrive soon.",
+                    options: ["will", "are", "going", "to"],
+                    answer: "will",
+                    hint: "Will + 原形動詞 (arrive)。"
                 },
                 {
-                    q: "We play ___ baseball after school.",
-                    options: ["the", "a", "X", "an"],
-                    answer: "X",
-                    hint: "球類運動 (baseball) 前面不加冠詞。"
+                    q: "We go to Taipei ___ train.",
+                    options: ["in", "on", "by", "at"],
+                    answer: "by",
+                    hint: "by + 交通工具 (by train)。"
                 },
                 {
-                    q: "Please stop ___ noise.",
-                    options: ["make", "to make", "making", "makes"],
-                    answer: "making",
-                    hint: "Stop + Ving (停止做某事)。"
+                    q: "He is on ___ bus.",
+                    options: ["a", "by", "in", "to"],
+                    answer: "a",
+                    hint: "on + 限定詞 (a/the/my) + bus。"
                 },
                 {
-                    q: "He stopped ___ some water.",
-                    options: ["buy", "to buy", "buying", "bought"],
-                    answer: "to buy",
-                    hint: "Stop + to V (停下來去做某事)。"
+                    q: "Look! It is ___ to rain.",
+                    options: ["go", "goes", "going", "gone"],
+                    answer: "going",
+                    hint: "be going to (即將發生)。"
                 },
                 {
-                    q: "My grade is ___ than yours.",
-                    options: ["good", "gooder", "better", "best"],
-                    answer: "better",
-                    hint: "Good 的比較級是不規則變化 better。"
+                    q: "___ you come with us?",
+                    options: ["Will", "Are", "Is", "Does"],
+                    answer: "Will",
+                    hint: "Will you... (你會...嗎？)。"
                 },
                 {
-                    q: "This problem is ___ than that one.",
-                    options: ["hard", "harder", "more hard", "hardest"],
-                    answer: "harder",
-                    hint: "單音節形容詞 + er。"
-                },
-                {
-                    q: "She is ___ than her sister.",
-                    options: ["beautiful", "beautifuler", "more beautiful", "most beautiful"],
-                    answer: "more beautiful",
-                    hint: "長音節形容詞前面加 more。"
+                    q: "The plane flies very ___.",
+                    options: ["fast", "fastly", "faster", "fastest"],
+                    answer: "fast",
+                    hint: "Fast 可當副詞，修飾 fly。"
                 }
             ]
         }
@@ -1303,8 +1350,8 @@
         
         document.getElementById('header-title').innerText = data.title;
         
-        // Updated loop for Week 5
-        [1, 2, 3, 4, 5].forEach(id => {
+        // Updated loop for Week 6
+        [1, 2, 3, 4, 5, 6].forEach(id => {
             const btn = document.getElementById(`week-btn-${id}`);
             if (btn) { // Safety check
                 if(id === weekId) {
